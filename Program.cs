@@ -37,15 +37,21 @@ if (connectionString.StartsWith("postgres://", StringComparison.OrdinalIgnoreCas
     var databaseUri = new Uri(connectionString);
     var userInfo = databaseUri.UserInfo.Split(':', 2);
 
-    connectionString = new NpgsqlConnectionStringBuilder
+    var connectionStringBuilder = new NpgsqlConnectionStringBuilder
     {
         Host = databaseUri.Host,
-        Port = databaseUri.Port,
         Database = databaseUri.AbsolutePath.TrimStart('/'),
         Username = Uri.UnescapeDataString(userInfo[0]),
         Password = userInfo.Length > 1 ? Uri.UnescapeDataString(userInfo[1]) : "",
         SslMode = SslMode.Require
-    }.ConnectionString;
+    };
+
+    if (databaseUri.Port > 0)
+    {
+        connectionStringBuilder.Port = databaseUri.Port;
+    }
+
+    connectionString = connectionStringBuilder.ConnectionString;
 }
 
 // Add PostgreSQL database
