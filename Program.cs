@@ -58,17 +58,12 @@ if (connectionString.StartsWith("postgres://", StringComparison.OrdinalIgnoreCas
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
 
-var allowedOrigins = builder.Configuration
-    .GetSection("Cors:AllowedOrigins")
-    .Get<string[]>()
-    ?? ["http://localhost:4200"];
-
 // Add CORS so Angular can connect
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngular", policy =>
     {
-        policy.WithOrigins(allowedOrigins)
+        policy.AllowAnyOrigin()
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
